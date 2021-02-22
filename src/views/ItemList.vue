@@ -2,7 +2,8 @@
   <div class="item-list-view">
     <div class="item-list">
       <item
-        v-for="item in displayItems"
+        v-for="item in $store.getters.displayItems"
+        :key="item.id"
         :item="item"
       />
     </div>
@@ -11,25 +12,20 @@
 
 <script>
 import Item from '../components/Item.vue'
-import { fetchListData } from '../api/api'
-
 
 export default {
   components: {
     Item
   },
-  beforeMount () {
+  beforeMount() {
     this.loadItems()
   },
-  data () {
-    return {
-      displayItems: window.items
-    }
-  },
   methods: {
-    loadItems () {
+    loadItems() {
       this.$bar.start()
-      fetchListData('top')
+      this.$store.dispatch('fetchListData', {
+        type: 'top'
+      })
         .then(items => {
           this.displayItems = items
           this.$bar.finish()
@@ -44,6 +40,7 @@ export default {
 .item-list-view {
   padding-top: 45px;
 }
+
 .item-list {
   background-color: #fff;
   border-radius: 2px;
@@ -52,6 +49,7 @@ export default {
   width: 100%;
   transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
 }
+
 @media (max-width: 600px) {
   .item-list {
     margin: 10px 0;
